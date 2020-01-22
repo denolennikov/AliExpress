@@ -68,8 +68,13 @@ class AliQueue {
         return sql;
     }
 
-    static updateAliQueueByFieldNameSQL(params){
-        let sql = `UPDATE ALI_QUEUE SET ? WHERE ?, ${params}`
+    static updateAliQueueByFieldNameSQL(param, condition){
+        // let a = [param, condition]
+        // console.log(a)
+        let sql = `'UPDATE ALI_QUEUE SET ? WHERE ?', ${[
+            { 'status': 'RESERVED', 'reserved_at': '2020-01-22 12:28:29' },
+            { 'product_code': '32940810951' }
+          ]}`
         return sql
     }
 

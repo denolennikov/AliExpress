@@ -146,12 +146,12 @@ router.post("/products", (req, res, next) => {
                             db.query(AliQueue.getAliQueueByFieldNameSQL('status', 'READY'), (err, data)=>{
                                 data.map((d, key)=>{
                                     if (d.product_code === product.code.toString()){
-                                        let param = [
-                                            {'status': 'RESERVED'}, 
-                                            {'reserved_at': moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")}, 
-                                            {'product_code': product.code.toString()}
-                                        ]
-                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(param), (err, data)=>{
+                                        let param = {
+                                            'status': 'RESERVED',
+                                            'reserved_at': moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
+                                        }
+                                        let condition = {'product_code': product.code.toString()}
+                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(param, condition), (err, data)=>{
                                             console.log(err, data)
                                             callApifyMain(startUrl);
                                             res.status(200).json({

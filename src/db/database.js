@@ -15,6 +15,7 @@ function executeQuery(sql, callback) {
             return callback(err, null);
         } else {
             if(connection) {
+                console.log('sql', sql)
                 connection.query(sql, function (error, results, fields) {
                     connection.release();
                     if (error) {
