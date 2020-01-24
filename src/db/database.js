@@ -9,14 +9,13 @@ const pool = mysql.createPool({
                 debug    : false 
             });
  
-function executeQuery(sql, callback) {
+function executeQuery(sql, params, callback) {
     pool.getConnection((err, connection) => {
         if(err) {
             return callback(err, null);
         } else {
             if(connection) {
-                console.log('sql', sql)
-                connection.query(sql, function (error, results, fields) {
+                connection.query(sql, params, function (error, results, fields) {
                     connection.release();
                     if (error) {
                         return callback(error, null);
@@ -28,8 +27,8 @@ function executeQuery(sql, callback) {
     });
 }
  
-function query(sql, callback) {
-    executeQuery(sql,function(err, data) {
+function query(sql, params, callback) {
+    executeQuery(sql, params, function(err, data) {
         if(err) {
             return callback(err);
         }       

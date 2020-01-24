@@ -1,26 +1,21 @@
 class Store {
 
-    constructor(store_id, store_name, store_url, store_feedbacks, seller_since) {
-        this.store_id=store_id;
-        this.store_name=store_name;
-        this.store_url=store_url;
-        this.store_feedbacks = store_feedbacks;
-        this.seller_since = seller_since;
+    constructor() {
+        
     }
 
     getAddStoreSQL() {
-        let sql = `INSERT INTO STORES(store_id, store_name, store_url, store_feedbacks, seller_since) \
-                   VALUES(${this.store_id}, '${this.store_name}', '${this.store_url}', '${this.store_feedbacks}', '${this.seller_since}')`;
+        let sql = `INSERT INTO STORES SET ?`
         return sql;
     }
 
-    static getStoreByIdSQL(id) {
-        let sql = `SELECT * FROM STORES WHERE id = ${id}`;
+    static getStoreByIdSQL() {
+        let sql = `SELECT * FROM STORES WHERE id=? `;
         return sql;
     }
 
-    static deleteStoreByIdSQL(id) {
-        let sql = `DELETE FROM STORES WHERE id = ${id}`;
+    static deleteStoreByIdSQL() {
+        let sql = `DELETE FROM STORES WHERE id=? `;
         return sql;
     }
 

@@ -26,25 +26,25 @@ router.get("/", (req, res, next) => {
 router.post("/add", (req, res, next) => {
 
     //read product information from request
-    let source = new Source(
-        req.body.storeName, 
-        req.body.storeCountry, 
-        req.body.storeLanguage, 
-        req.body.storeUrl
-    );
+    let params = {
+        store_name: req.body.storeName,
+        store_country: req.body.storeCountry,
+        store_language: req.body.storeLanguage,
+        store_url: req.body.storeUrl
+    }
+    let source = new Source();
 
-    db.query(source.getAddSourceSQL(), (err, data)=> {
+    db.query(source.getAddSourceSQL(), params, (err, data)=> {
         res.status(200).json({
             message:"Source added.",
-            sourceId: data.insertId
+            sourceId: data
         });
     });
 });
 
 router.get("/:sourceId", (req, res, next) => {
     let sid = req.params.sourceId;
-
-    db.query(Source.getSourceByIdSQL(sid), (err, data)=> {
+    db.query(Source.getSourceByIdSQL(), [sid], (err, data)=> {
         if(!err) {
             if(data && data.length > 0) {
                 res.status(200).json({
@@ -62,9 +62,9 @@ router.get("/:sourceId", (req, res, next) => {
 
 router.post("/delete", (req, res, next) => {
 
-    var sid = req.body.store_id;
+    var sid = req.body.id;
 
-    db.query(Source.deleteSourceByIdSQL(sid), (err, data)=> {
+    db.query(Source.deleteSourceByIdSQL(), [sid], (err, data)=> {
         if(!err) {
             if(data && data.affectedRows > 0) {
                 res.status(200).json({
@@ -122,37 +122,41 @@ router.post("/products", (req, res, next) => {
                 break;
         }
 
-        db.query(Source.getSourceByLanguageSQL(lang), (err, data) => {
+        db.query(Source.getSourceByFieldNameSQL('store_language'), [lang], (err, data) => {
             if(!err) {
                 if(data && data.length > 0) {
                     let domain = data[0].store_url
-                    let aliRequest = new AliRequest(uuidv1(), key)
-                    db.query(aliRequest.getAddAliRequestSQL(), (err, data)=> {
-                        let aliQueue = new AliQueue(
-                            uuidv1(), 
-                            product.code.toString(), 
-                            lang, 
-                            null,
-                            "READY", 
-                            '2008-01-01 00:00:01', 
-                            0, 
-                            '2008-01-01 00:00:01', 
-                            '2008-01-01 00:00:01',
-                            moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
-                            moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
-                        );
-                        db.query(aliQueue.getAddAliQueueSQL(), (err, data)=> {
+                    let params = {
+                        uuid: uuidv1(),
+                        num_products: key,
+                        created_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
+                        updated_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
+                    }
+                    let aliRequest = new AliRequest()
+                    db.query(aliRequest.getAddAliRequestSQL(), params, (err, data)=> {
+                        let params = {
+                            uuid: uuidv1(),
+                            product_code: product.code.toString(),
+                            language: lang,
+                            product_info_payload: null,
+                            status: "READY",
+                            failed_at: '2008-01-01 00:00:01',
+                            imported: 0,
+                            reserved_at: '2008-01-01 00:00:01',
+                            finished_at: '2008-01-01 00:00:01',
+                            created_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
+                            updated_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
+                        }
+                        let aliQueue = new AliQueue();
+                        db.query(aliQueue.getAddAliQueueSQL(), params, (err, data)=> {
                             let startUrl =  domain + 'item/' + product.code + '.html'
-                            db.query(AliQueue.getAliQueueByFieldNameSQL('status', 'READY'), (err, data)=>{
+                            db.query(AliQueue.getAliQueueByFieldNameSQL('status'), ['READY'], (err, data)=>{
                                 data.map((d, key)=>{
                                     if (d.product_code === product.code.toString()){
-                                        let param = {
-                                            'status': 'RESERVED',
-                                            'reserved_at': moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
-                                        }
-                                        let condition = {'product_code': product.code.toString()}
-                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(param, condition), (err, data)=>{
-                                            console.log(err, data)
+                                        let params = ['RESERVED', moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), product.code.toString()]
+                                        let fields = 'status = ?, reserved_at = ?'
+                                        let condition = 'product_code = ?'
+                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
                                             callApifyMain(startUrl);
                                             res.status(200).json({
                                                 message:"Ok."

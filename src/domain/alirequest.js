@@ -1,23 +1,20 @@
 class AliRequest {
 
-    constructor(uuid, num_proucts) {
-        this.uuid = uuid;
-        this.num_products = num_proucts;
+    constructor() {
     }
 
     getAddAliRequestSQL() {
-        let sql = `INSERT INTO ALI_REQUESTS(uuid, num_products) \
-                   VALUES('${this.uuid}',${this.num_products})`;
+        let sql = `INSERT INTO ALI_REQUESTS SET ?`
         return sql;
     }
 
-    static getAliRequestByIdSQL(id) {
-        let sql = `SELECT * FROM ALI_REQUESTS WHERE id = ${id}`;
+    static getAliRequestByIdSQL() {
+        let sql = `SELECT * FROM ALI_REQUESTS WHERE id=?`;
         return sql;
     }
 
-    static deleteAliRequestByIdSQL(id) {
-        let sql = `DELETE FROM ALI_REQUESTS WHERE id = ${id}`;
+    static deleteAliRequestByIdSQL() {
+        let sql = `DELETE FROM ALI_REQUESTS WHERE id=?`;
         return sql;
     }
 
