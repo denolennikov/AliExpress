@@ -4,13 +4,11 @@ import cors from "cors";
 
 import sources from "./api/sources"
 
-var kue = require("kue");
 const app = express();
  
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:false}));
-app.use("/kue-ui", kue.app);
 
 app.use("/api/v1/sources", sources);
 

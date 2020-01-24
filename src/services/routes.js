@@ -120,8 +120,6 @@ exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
             },
         }, { forefront: true });
     } else {
-        await Apify.pushData({ ...product });
-
         await new Promise((resolve, reject) => {
             let params = {
                 store_id: product['store']['id'],
@@ -147,6 +145,7 @@ exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
                 });
             });
         });
+        await Apify.pushData({ ...product });
         console.log(`CRAWLER -- Fetching product: ${productId} completed and successfully pushed to dataset`);
     }
 };

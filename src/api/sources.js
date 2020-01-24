@@ -92,11 +92,7 @@ router.post("/products", (req, res, next) => {
                                         let fields = 'status = ?, reserved_at = ?';
                                         let condition = 'product_code = ?';
                                         db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data) => {
-                                            console.log('-------sources.js---------')
                                             callApifyMain(startUrl);
-                                            // res.status(200).json({
-                                            //     message:"Ok."
-                                            // });
                                         });
                                     }
                                 });
@@ -106,6 +102,9 @@ router.post("/products", (req, res, next) => {
                 }
             }
         })
+    })
+    res.status(200).json({
+        message: "Ok"
     })
 })
 
