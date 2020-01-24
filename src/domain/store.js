@@ -10,12 +10,12 @@ class Store {
     }
 
     static getStoreByIdSQL() {
-        let sql = `SELECT * FROM STORES WHERE id=? `;
+        let sql = `SELECT * FROM STORES WHERE id=?`;
         return sql;
     }
 
     static deleteStoreByIdSQL() {
-        let sql = `DELETE FROM STORES WHERE id=? `;
+        let sql = `DELETE FROM STORES WHERE id=?`;
         return sql;
     }
 

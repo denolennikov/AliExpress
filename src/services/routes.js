@@ -1,8 +1,11 @@
 // routes.js
 const Apify = require('apify');
 const extractors = require('./extractors');
+var moment = require('moment');
+
 import db from "../db/database";
 import AliQueue from "../domain/aliqueue";
+import Store from "../domain/store";
 
 const {
     utils: { log },
@@ -117,10 +120,33 @@ exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
             },
         }, { forefront: true });
     } else {
-        // Push data
-        console.log('push data', userInput, request, product, productId) 
         await Apify.pushData({ ...product });
-        
+
+        await new Promise((resolve, reject) => {
+            let params = {
+                store_id: product['store']['id'],
+                store_name: product['store']['name'],
+                store_url: product['store']['url'],
+                store_feedbacks: parseFloat(product['store']['positiveRate']),
+                seller_since: moment(product['store']['establishedAt'], 'MMM D, YYYY').format('YYYY-MM-DD'),
+                created_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
+                modified_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
+            };
+            let store = new Store();
+            db.query(store.getAddStoreSQL(), params, (err, data) => {
+                let params = [
+                    'FINISHED', 
+                    moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                    JSON.stringify(product),
+                    productId.toString()
+                ];
+                let fields = 'status = ?, finished_at = ?, product_info_payload = ?';
+                let condition = 'product_code = ?';
+                db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
+                    resolve();
+                });
+            });
+        });
         console.log(`CRAWLER -- Fetching product: ${productId} completed and successfully pushed to dataset`);
     }
 };

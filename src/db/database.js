@@ -9,7 +9,7 @@ const pool = mysql.createPool({
                 debug    : false 
             });
  
-function executeQuery(sql, params, callback) {
+const executeQuery = (sql, params, callback) => {
     pool.getConnection((err, connection) => {
         if(err) {
             return callback(err, null);
@@ -27,15 +27,15 @@ function executeQuery(sql, params, callback) {
     });
 }
  
-function query(sql, params, callback) {
+const query = (sql, params, callback) => {
     executeQuery(sql, params, function(err, data) {
         if(err) {
             return callback(err);
-        }       
+        }
         callback(null, data);
     });
 }
  
 module.exports = {
-    query: query
+    query
 }

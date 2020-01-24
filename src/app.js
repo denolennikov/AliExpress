@@ -3,7 +3,6 @@ import bodyparser from "body-parser";
 import cors from "cors";
 
 import sources from "./api/sources"
-import stores from "./api/stores"
 
 var kue = require("kue");
 const app = express();
@@ -14,8 +13,7 @@ app.use(bodyparser.urlencoded({extended:false}));
 app.use("/kue-ui", kue.app);
 
 app.use("/api/v1/sources", sources);
-app.use("/api/v1/stores", stores);
-`` 
+
 //if we are here then the specified request is not found
 app.use((req,res,next)=> {
     const err = new Error("Not Found");

@@ -11,75 +11,6 @@ var moment = require('moment');
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-
-    db.query(Source.getAllSourceSQL(), (err, data)=> {
-        if(!err) {
-            res.status(200).json({
-                message:"Sources listed.",
-                sourceId:data
-            });
-        }
-    });
-});
-
-router.post("/add", (req, res, next) => {
-
-    //read product information from request
-    let params = {
-        store_name: req.body.storeName,
-        store_country: req.body.storeCountry,
-        store_language: req.body.storeLanguage,
-        store_url: req.body.storeUrl
-    }
-    let source = new Source();
-
-    db.query(source.getAddSourceSQL(), params, (err, data)=> {
-        res.status(200).json({
-            message:"Source added.",
-            sourceId: data
-        });
-    });
-});
-
-router.get("/:sourceId", (req, res, next) => {
-    let sid = req.params.sourceId;
-    db.query(Source.getSourceByIdSQL(), [sid], (err, data)=> {
-        if(!err) {
-            if(data && data.length > 0) {
-                res.status(200).json({
-                    message:"Source found.",
-                    source: data
-                });
-            } else {
-                res.status(200).json({
-                    message:"Source Not found."
-                });
-            }
-        }
-    });
-});
-
-router.post("/delete", (req, res, next) => {
-
-    var sid = req.body.id;
-
-    db.query(Source.deleteSourceByIdSQL(), [sid], (err, data)=> {
-        if(!err) {
-            if(data && data.affectedRows > 0) {
-                res.status(200).json({
-                    message:`Source deleted with id = ${sid}.`,
-                    affectedRows: data.affectedRows
-                });
-            } else {
-                res.status(200).json({
-                    message:"Source Not found."
-                });
-            }
-        }
-    });
-});
-
 router.post("/products", (req, res, next) => {
     let products = req.body.products;
     let lang = '';
@@ -133,7 +64,7 @@ router.post("/products", (req, res, next) => {
                         updated_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
                     }
                     let aliRequest = new AliRequest()
-                    db.query(aliRequest.getAddAliRequestSQL(), params, (err, data)=> {
+                    db.query(aliRequest.getAddAliRequestSQL(), params, (err, data) => {
                         let params = {
                             uuid: uuidv1(),
                             product_code: product.code.toString(),
@@ -148,19 +79,24 @@ router.post("/products", (req, res, next) => {
                             updated_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
                         }
                         let aliQueue = new AliQueue();
-                        db.query(aliQueue.getAddAliQueueSQL(), params, (err, data)=> {
-                            let startUrl =  domain + 'item/' + product.code + '.html'
+                        db.query(aliQueue.getAddAliQueueSQL(), params, (err, data) => {
+                            let startUrl =  domain + 'item/' + product.code + '.html';
                             db.query(AliQueue.getAliQueueByFieldNameSQL('status'), ['READY'], (err, data)=>{
                                 data.map((d, key)=>{
                                     if (d.product_code === product.code.toString()){
-                                        let params = ['RESERVED', moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), product.code.toString()]
-                                        let fields = 'status = ?, reserved_at = ?'
-                                        let condition = 'product_code = ?'
-                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
+                                        let params = [
+                                            'RESERVED', 
+                                            moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                                            product.code.toString()
+                                        ];
+                                        let fields = 'status = ?, reserved_at = ?';
+                                        let condition = 'product_code = ?';
+                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data) => {
+                                            console.log('-------sources.js---------')
                                             callApifyMain(startUrl);
-                                            res.status(200).json({
-                                                message:"Ok."
-                                            });
+                                            // res.status(200).json({
+                                            //     message:"Ok."
+                                            // });
                                         });
                                     }
                                 });
