@@ -47,7 +47,7 @@ const getProductDetail = ($, url) => {
     const dataScript = $($('script').filter((i, script) => $(script).html().includes('runParams')).get()[0]).html();
 
     const { data } = safeEval(dataScript.split('window.runParams = ')[1].split('var GaData')[0].replace(/;/g, ''));
-    console.log(data)
+
     const {
         actionModule,
         titleModule,

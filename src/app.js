@@ -5,12 +5,13 @@ import cors from "cors";
 import sources from "./api/sources"
 
 const app = express();
- 
+const { UI } = require('bull-board')
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:false}));
 
 app.use("/api/v1/sources", sources);
+app.use('/admin/queues', UI)
 
 //if we are here then the specified request is not found
 app.use((req,res,next)=> {
@@ -29,5 +30,5 @@ app.use((err,req, res, next) => {
        }
    });
 });
- 
+
 module.exports = app;
