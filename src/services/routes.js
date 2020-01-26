@@ -103,51 +103,67 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
 exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
     const { productId } = request.userData;
     const { includeDescription } = userInput;
-
+    let product = ''
     log.info(`CRAWLER -- Fetching product: ${productId}`);
 
     // Fetch product details
-    const product = await extractors.getProductDetail($, request.url);
-
-    // Check description option
-    if (includeDescription) {
-        // Fetch description
-        await requestQueue.addRequest({
-            url: product.descriptionURL,
-            userData: {
-                label: 'DESCRIPTION',
-                product,
-            },
-        }, { forefront: true });
-    } else {
+    try {
+        product = await extractors.getProductDetail($, request.url);
+    } catch (error) {
         await new Promise((resolve, reject) => {
-            let params = {
-                store_id: product['store']['id'],
-                store_name: product['store']['name'],
-                store_url: product['store']['url'],
-                store_feedbacks: parseFloat(product['store']['positiveRate']),
-                seller_since: moment(product['store']['establishedAt'], 'MMM D, YYYY').format('YYYY-MM-DD'),
-                created_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
-                modified_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
-            };
-            let store = new Store();
-            db.query(store.getAddStoreSQL(), params, (err, data) => {
-                let params = [
-                    'FINISHED', 
-                    moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
-                    JSON.stringify(product),
-                    productId.toString()
-                ];
-                let fields = 'status = ?, finished_at = ?, product_info_payload = ?';
-                let condition = 'product_code = ?';
-                db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
-                    resolve();
-                });
+            let params = [
+                'FAILED', 
+                moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                productId.toString()
+            ];
+            let fields = 'status = ?, failed_at = ?';
+            let condition = 'product_code = ?';
+            db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
+                resolve();
             });
         });
-        await Apify.pushData({ ...product });
-        console.log(`CRAWLER -- Fetching product: ${productId} completed and successfully pushed to dataset`);
+    } finally {
+        // Check description option
+        if (includeDescription) {
+            // Fetch description
+            await requestQueue.addRequest({
+                url: product.descriptionURL,
+                userData: {
+                    label: 'DESCRIPTION',
+                    product,
+                },
+            }, { forefront: true });
+        } else {
+            await new Promise((resolve, reject) => {
+                let params = {
+                    store_id: product['store']['id'],
+                    store_name: product['store']['name'],
+                    store_url: product['store']['url'],
+                    store_feedbacks: parseFloat(product['store']['positiveRate']),
+                    seller_since: moment(product['store']['establishedAt'], 'MMM D, YYYY').format('YYYY-MM-DD'),
+                    created_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
+                    modified_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
+                };
+                let store = new Store();
+                db.query(store.getAddStoreSQL(), params, (err, data) => {
+                    let params = [
+                        'FINISHED', 
+                        moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                        JSON.stringify(product),
+                        productId.toString()
+                    ];
+                    let fields = 'status = ?, finished_at = ?, product_info_payload = ?';
+                    let condition = 'product_code = ?';
+                    db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
+                        resolve();
+                    });
+                });
+            });
+            await Apify.pushData({ ...product });
+            console.log(`CRAWLER -- Fetching product: ${productId} completed and successfully pushed to dataset`);
+        }
     }
+    
 };
 
 // Description page crawler

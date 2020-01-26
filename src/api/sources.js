@@ -15,6 +15,7 @@ router.post("/products", (req, res, next) => {
         }
     });
     setQueues([queue])
+
     const data = {
         products: req.body.products,
     }
