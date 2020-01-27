@@ -44,8 +44,6 @@ exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
             },
         });
     }
-
-
     log.debug(`CRAWLER -- Fetched ${subCategories.length} subcategories and moving to each of them`);
 };
 
@@ -114,9 +112,10 @@ exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
             let params = [
                 'FAILED', 
                 moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
                 productId.toString()
             ];
-            let fields = 'status = ?, failed_at = ?';
+            let fields = 'status = ?, failed_at = ?, updated_at = ?';
             let condition = 'product_code = ?';
             db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
                 resolve();
@@ -148,11 +147,12 @@ exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
                 db.query(store.getAddStoreSQL(), params, (err, data) => {
                     let params = [
                         'FINISHED', 
-                        moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                        moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
                         JSON.stringify(product),
+                        moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
                         productId.toString()
                     ];
-                    let fields = 'status = ?, finished_at = ?, product_info_payload = ?';
+                    let fields = 'status = ?, finished_at = ?, product_info_payload = ?, updated_at = ?';
                     let condition = 'product_code = ?';
                     db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data)=>{
                         resolve();
@@ -163,7 +163,6 @@ exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
             console.log(`CRAWLER -- Fetching product: ${productId} completed and successfully pushed to dataset`);
         }
     }
-    
 };
 
 // Description page crawler

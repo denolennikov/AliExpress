@@ -14,14 +14,14 @@ app.use("/api/v1/sources", sources);
 app.use('/admin/queues', UI)
 
 //if we are here then the specified request is not found
-app.use((req,res,next)=> {
+app.use((req, res, next)=> {
     const err = new Error("Not Found");
     err.status = 404;
     next(err);
 });
  
 //all other requests are not implemented.
-app.use((err,req, res, next) => {
+app.use((err, req, res, next) => {
    res.status(err.status || 501);
    res.json({
        error: {

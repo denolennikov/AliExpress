@@ -67,10 +67,7 @@ const scrappingWoker = (parameters) => {
                             language: lang,
                             product_info_payload: null,
                             status: "READY",
-                            failed_at: '2008-01-01 00:00:01',
                             imported: 0,
-                            reserved_at: '2008-01-01 00:00:01',
-                            finished_at: '2008-01-01 00:00:01',
                             created_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
                             updated_at: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss")
                         }
@@ -78,20 +75,25 @@ const scrappingWoker = (parameters) => {
                         db.query(aliQueue.getAddAliQueueSQL(), params, (err, data) => {
                             let startUrl =  domain + 'item/' + product.code + '.html';
                             db.query(AliQueue.getAliQueueByFieldNameSQL('status'), ['READY'], (err, data)=>{
-                                data.map((d, key)=>{
-                                    if (d.product_code === product.code.toString()){
-                                        let params = [
-                                            'RESERVED', 
-                                            moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
-                                            product.code.toString()
-                                        ];
-                                        let fields = 'status = ?, reserved_at = ?';
-                                        let condition = 'product_code = ?';
-                                        db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data) => {
-                                            callApifyMain(startUrl);
+                                if(!err) {
+                                    if(data && data.length > 0) {
+                                        data.map((d, key)=>{
+                                            if (d.product_code === product.code.toString()){
+                                                let params = [
+                                                    'RESERVED', 
+                                                    moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"), 
+                                                    moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
+                                                    product.code.toString()
+                                                ];
+                                                let fields = 'status = ?, reserved_at = ?, updated_at = ?';
+                                                let condition = 'product_code = ?';
+                                                db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, (err, data) => {
+                                                    callApifyMain(startUrl);
+                                                });
+                                            }
                                         });
                                     }
-                                });
+                                }
                             });
                         });
                     });

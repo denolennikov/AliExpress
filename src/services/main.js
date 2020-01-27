@@ -99,6 +99,7 @@ const callApifyMain = (url) => {
         await crawler.run();
 
         log.info('PHASE -- ACTOR FINISHED.');
+        await requestQueue.drop();
     });
 }
 
