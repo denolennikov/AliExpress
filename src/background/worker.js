@@ -7,7 +7,7 @@ const uuidv1 = require('uuid/v1');
 var moment = require('moment');
 
 
-const scrappingWoker = (parameters) => {
+const aliExpressWorker = (parameters) => {
     let products = parameters;
     let lang = '';
 
@@ -104,5 +104,5 @@ const scrappingWoker = (parameters) => {
 }
 
 module.exports = {
-    scrappingWoker
+    aliExpressWorker
 }

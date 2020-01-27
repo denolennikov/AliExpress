@@ -1,4 +1,6 @@
 import express from "express";
+require('dotenv').config()
+
 const worker = require('../background/worker');
 
 const router = express.Router();
@@ -6,12 +8,12 @@ var Queue = require('bull');
 const { setQueues } = require('bull-board')
 
 router.post("/products", (req, res, next) => {
-    
-    var queue = new Queue('scrapping', {
+
+    var queue = new Queue('extractProductQueue', {
         redis: {
-          host: '127.0.0.1',
-          port: 6379,
-          password: 'password'
+          host: process.env.REDIS_HOST,
+          port: process.env.REDIS_PORT,
+          password: process.env.REDIS_PASSWORD
         }
     });
     setQueues([queue])
@@ -28,7 +30,7 @@ router.post("/products", (req, res, next) => {
     queue.add(data, options);
 
     queue.process(async job => {
-        await worker.scrappingWoker(job.data.products)
+        await worker.aliExpressWorker(job.data.products)
     })
 
     queue.on('completed', (job, result) => {

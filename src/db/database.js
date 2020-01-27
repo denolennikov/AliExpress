@@ -1,17 +1,19 @@
 import mysql from "mysql";
- 
+require('dotenv').config()
+
 const pool = mysql.createPool({
                 connectionLimit : 10,
-                host     : '127.0.0.1',
-                user     : 'root',
-                password : 'password',
+                host     : process.env.MYSQL_HOST,
+                user     : process.env.MYSQL_USER,
+                password : process.env.MYSQL_USER_PASSWORD,
                 database : 'Aliexpress',
                 debug    : false 
             });
- 
+
 const executeQuery = (sql, params, callback) => {
     pool.getConnection((err, connection) => {
         if(err) {
+            console.log(err)
             return callback(err, null);
         } else {
             if(connection) {
