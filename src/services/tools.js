@@ -52,11 +52,6 @@ exports.mapStartUrls = (startUrls) => {
                 baseUrl: link,
                 productId: link.split('/item/')[1].split('.htm')[0],
             };
-        } else if (link.includes('/category/')) {
-            routeType = 'CATEGORY';
-            userData = {
-                baseUrl: link,
-            };
         } else {
             throw new Error('Wrong URL provided to Start URLS!');
         }

@@ -1,46 +1,4 @@
 const safeEval = require('safe-eval');
-const flattenDeep = require('lodash/flattenDeep');
-
-// Fetch all main category paths from homepage
-const getAllMainCategoryPaths = ($) => {
-    return $('dd.sub-cate').map((i, el) => $(el).data('path')).get();
-};
-
-// Fetch every subcategory hidden pages (loaders)
-const getAllSubCategories = async ($) => {
-    const dataScript = $($('script').filter((i, script) => $(script).html().includes('runParams')).get()[0]).html();
-
-    const data = flattenDeep(JSON.parse(
-        dataScript.split('window.runParams = ')[2].split('window.runParams.csrfToken =')[0].replace(/;/g, ''),
-    ).refineCategory
-        .map(category => category.childCategories))
-        .filter(el => el).map(item => ({ name: item.categoryName, link: `https:${item.categoryUrl}` }));
-
-    return data;
-};
-
-// Filters sub categories with given options
-const filterSubCategories = (categoryStartIndex = 0, categoryEndIndex = null, subCategories) => {
-    // Calculate end index
-    const endIndex = categoryEndIndex > 0 ? categoryEndIndex : subCategories.length - 1;
-
-    // Slice array
-    return subCategories.slice(categoryStartIndex, endIndex);
-};
-
-// Fetch all products from a global object `runParams`
-const getProductsOfPage = ($) => {
-    const dataScript = $($('script').filter((i, script) => $(script).html().includes('runParams')).get()[0]).html();
-    const data = JSON.parse(
-        dataScript.split('window.runParams = ')[2].split('window.runParams.csrfToken =')[0].replace(/;/g, ''),
-    );
-
-    if (!data.success) {
-        throw new Error('We got blocked when trying to fetch products!');
-    }
-
-    return data.items && data.items.length > 0 ? data.items.map(item => ({ id: item.productId, name: item.title, link: item.productDetailUrl })) : [];
-};
 
 // Fetch basic product detail from a global object `runParams`
 const getProductDetail = ($, url) => {
@@ -116,10 +74,6 @@ const getProductDescription = async ($) => {
 
 
 module.exports = {
-    getAllMainCategoryPaths,
-    getAllSubCategories,
-    filterSubCategories,
-    getProductsOfPage,
     getProductDetail,
     getProductDescription,
 };
