@@ -19,12 +19,10 @@ exports.createRouter = (globalContext) => {
 
 // Creates proxy URL with user input
 const createProxyUrl = async (userInput) => {
-    console.log('tools.js----22---', userInput)
     const { apifyProxyGroups, useApifyProxy, proxyUrls } = userInput.proxy;
     if (proxyUrls && proxyUrls.length > 0) {
         return proxyUrls[0];
     }
-    console.log('tools.js----27-----', apifyProxyGroups)
     if (useApifyProxy) {
         return `http://${apifyProxyGroups ? apifyProxyGroups.join(',') : 'auto'}:${process.env.APIFY_PROXY_PASSWORD}@proxy.apify.com:8000`;
     }
