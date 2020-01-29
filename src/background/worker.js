@@ -8,6 +8,7 @@ const uuidv1 = require('uuid/v1');
 
 const aliExpressWorker = (product) => {
     db.query(Source.getSourceByFieldNameSQL('store_language'), [product.language], (err, data) => {
+        console.log('----worker.js-----11', err, data)
         if(!err) {
             if(data && data.length > 0) {
                 let domain = data[0].store_url
@@ -19,6 +20,7 @@ const aliExpressWorker = (product) => {
                 }
                 let aliRequest = new AliRequest()
                 db.query(aliRequest.getAddAliRequestSQL(), params, (err, data) => {
+                    console.log('----worker.js-----23', err, data)
                     let params = {
                         uuid: uuidv1(),
                         product_code: product.code.toString(),
@@ -31,8 +33,10 @@ const aliExpressWorker = (product) => {
                     }
                     let aliQueue = new AliQueue();
                     db.query(aliQueue.getAddAliQueueSQL(), params, (err, data) => {
+                        console.log('----worker.js-----36', err, data)
                         let startUrl =  domain + 'item/' + product.code + '.html';
                         db.query(AliQueue.getAliQueueByFieldNameSQL('status'), ['READY'], (err, data)=>{
+                            console.log('----worker.js-----39', err, data)
                             if(!err) {
                                 if(data && data.length > 0) {
                                     data.map((d, key)=>{
@@ -46,6 +50,7 @@ const aliExpressWorker = (product) => {
                                             let fields = 'status = ?, reserved_at = ?, updated_at = ?';
                                             let condition = 'product_code = ?';
                                             db.query(AliQueue.updateAliQueueByFieldNameSQL(fields, condition), params, async (err, data) => {
+                                                console.log('----worker.js-----53', err, data)
                                                 await callApifyMain(startUrl);
                                             });
                                         }
