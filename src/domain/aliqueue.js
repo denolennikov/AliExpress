@@ -1,5 +1,3 @@
-var moment = require('moment');
-
 class AliQueue {
 
     constructor(){
@@ -37,4 +35,4 @@ class AliQueue {
     }    
 }
 
-export default AliQueue;
+module.exports = AliQueue;

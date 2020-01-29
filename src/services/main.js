@@ -103,4 +103,4 @@ const callApifyMain = (url) => {
     });
 }
 
-export default callApifyMain;
+module.exports = callApifyMain

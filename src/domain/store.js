@@ -25,4 +25,4 @@ class Store {
     }
 }
 
-export default Store;
+module.exports = Store

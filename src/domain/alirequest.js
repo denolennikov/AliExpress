@@ -24,4 +24,4 @@ class AliRequest {
     }
 }
 
-export default AliRequest;
+module.exports = AliRequest

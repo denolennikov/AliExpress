@@ -1,11 +1,13 @@
-import express from "express";
-import bodyparser from "body-parser";
-import cors from "cors";
-
-import sources from "./api/sources"
+var express = require('express');
+var bodyparser = require('body-parser');
+var cors = require('cors');
+var Queue = require('bull');
+var { setQueues, UI } = require('bull-board');
+var sources = require('./api/sources');
 
 const app = express();
-const { UI } = require('bull-board')
+require('dotenv').config()
+
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:false}));
@@ -20,7 +22,6 @@ app.use((req, res, next)=> {
     next(err);
 });
  
-//all other requests are not implemented.
 app.use((err, req, res, next) => {
    res.status(err.status || 501);
    res.json({
@@ -30,5 +31,13 @@ app.use((err, req, res, next) => {
        }
    });
 });
+
+var workQueue = new Queue('worker', {
+    redis: {
+      host: '127.0.0.1' ,
+      port: 6379
+    }
+});
+setQueues([workQueue]);
 
 module.exports = app;

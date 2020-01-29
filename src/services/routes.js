@@ -3,9 +3,9 @@ const Apify = require('apify');
 const extractors = require('./extractors');
 var moment = require('moment');
 
-import db from "../db/database";
-import AliQueue from "../domain/aliqueue";
-import Store from "../domain/store";
+var db = require('../db/database');
+var AliQueue = require('../domain/aliqueue');
+var Store = require('../domain/store');
 
 const {
     utils: { log },

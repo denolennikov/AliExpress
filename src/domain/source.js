@@ -30,4 +30,4 @@ class Source {
     }
 }
 
-export default Source;
+module.exports = Source
