@@ -5,22 +5,22 @@ class Store {
     }
 
     getAddStoreSQL() {
-        let sql = `INSERT INTO STORES SET ?`
+        let sql = `INSERT INTO stores SET ?`
         return sql;
     }
 
     static getStoreByIdSQL() {
-        let sql = `SELECT * FROM STORES WHERE id=?`;
+        let sql = `SELECT * FROM stores WHERE id=?`;
         return sql;
     }
 
     static deleteStoreByIdSQL() {
-        let sql = `DELETE FROM STORES WHERE id=?`;
+        let sql = `DELETE FROM stores WHERE id=?`;
         return sql;
     }
 
     static getAllStoreSQL() {
-        let sql = `SELECT * FROM STORES`;
+        let sql = `SELECT * FROM stores`;
         return sql;
     }
 }

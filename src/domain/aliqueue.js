@@ -5,32 +5,32 @@ class AliQueue {
     }
 
     getAddAliQueueSQL() {
-        let sql = `INSERT INTO ALI_QUEUE SET ?`
+        let sql = `INSERT INTO ali_queue SET ?`
         return sql;
     }
 
     static getAliQueueByIdSQL() {
-        let sql = `SELECT * FROM ALI_QUEUE WHERE id=?`;
+        let sql = `SELECT * FROM ali_queue WHERE id=?`;
         return sql;
     }
 
     static getAliQueueByFieldNameSQL(fieldName) {
-        let sql = `SELECT * FROM ALI_QUEUE WHERE ${fieldName}=?`
+        let sql = `SELECT * FROM ali_queue WHERE ${fieldName}=?`
         return sql;
     }
 
     static updateAliQueueByFieldNameSQL(fields, condition){
-        let sql = `UPDATE ALI_QUEUE SET ${fields} WHERE ${condition}`
+        let sql = `UPDATE ali_queue SET ${fields} WHERE ${condition}`
         return sql
     }
 
     static deleteAliQueueByIdSQL() {
-        let sql = `DELETE FROM ALI_QUEUE WHERE id=?`;
+        let sql = `DELETE FROM ali_queue WHERE id=?`;
         return sql;
     }
 
     static getAllAliQueueSQL() {
-        let sql = `SELECT * FROM ALI_QUEUE`;
+        let sql = `SELECT * FROM ali_queue`;
         return sql;
     }    
 }
