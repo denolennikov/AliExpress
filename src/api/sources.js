@@ -11,7 +11,6 @@ const workQueue = new Queue('worker', {
   });
 
 router.post("/products", async (req, res, next) => {
-    console.log('This api requested from users');
     let products = req.body.products;
     products.map(async (product, key) => {
         const data = { product };
