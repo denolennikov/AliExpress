@@ -11,6 +11,7 @@ const pool = mysql.createPool({
             });
 
 const executeQuery = (sql, params, callback) => {
+    console.log(process.env.MYSQL_HOST, process.env.MYSQL_USER, process.env.MYSQL_USER_PASSWORD)
     pool.getConnection((err, connection) => {
         if(err) {
             console.log(err)
