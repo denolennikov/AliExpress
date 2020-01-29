@@ -34,7 +34,7 @@ app.use((err, req, res, next) => {
 
 var workQueue = new Queue('worker', {
     redis: {
-      host: '127.0.0.1' ,
+      host: 'aliexpress.3yq7qt.0001.use1.cache.amazonaws.com' ,
       port: 6379
     }
 });
