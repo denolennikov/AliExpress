@@ -13,7 +13,7 @@ const callApifyMain = (url) => {
         log.info('PHASE -- STARTING ACTOR.');
 
         var userInput = await Apify.getInput();
-
+        console.log('main.js--16', userInput)
         userInput = Object.assign({}, userInput, {"startUrls": [
             {"url": url}
         ]})
